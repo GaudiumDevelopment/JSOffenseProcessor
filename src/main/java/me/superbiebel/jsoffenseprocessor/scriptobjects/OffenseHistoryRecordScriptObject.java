@@ -1,4 +1,4 @@
-package me.superbiebel.jsoffenseprocessor;
+package me.superbiebel.jsoffenseprocessor.scriptobjects;
 
 import java.util.List;
 import java.util.Map;

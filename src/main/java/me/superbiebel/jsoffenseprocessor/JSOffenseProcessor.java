@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import me.superbiebel.jsoffenseprocessor.scriptobjects.OffenseHistoryRecordScriptObject;
 import me.superbiebel.punishapi.api.DataAPI;
 import me.superbiebel.punishapi.dataobjects.OffenseHistoryRecord;
 import me.superbiebel.punishapi.dataobjects.OffenseProcessingRequest;
@@ -28,7 +29,7 @@ public class JSOffenseProcessor extends AbstractOffenseProcessor {
     @Override
     protected OffenseHistoryRecord process(OffenseProcessingRequest offenseProcessingRequest, File scriptFile) throws OffenseProcessingException {
         try {
-            return ScriptObjectConverter.convertOffenseScriptProcessingResultToOffenseHistoryRecord(processScript(offenseProcessingRequest, scriptFile), offenseProcessingRequest, true);
+            return ScriptObjectConverter.convertOffenseScriptProcessingResultToOffenseHistoryRecord(processScript(offenseProcessingRequest, scriptFile), offenseProcessingRequest, false); //make sure this is false otherwise the converter will try to convert an empty string to a UUID (uuid errors internally)
         } catch (Exception e) {
             throw new OffenseProcessingException(e);
         }

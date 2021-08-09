@@ -1,4 +1,4 @@
-package me.superbiebel.punishapi.tests.premadeoffenseprocessors.graalvmjs;
+package me.superbiebel.punishapi.tests.graalvmjs;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 import me.superbiebel.jsoffenseprocessor.JSOffenseProcessor;
-import me.superbiebel.jsoffenseprocessor.OffenseHistoryRecordScriptObject;
+import me.superbiebel.jsoffenseprocessor.scriptobjects.OffenseHistoryRecordScriptObject;
+import me.superbiebel.punishapi.api.DataAPI;
 import me.superbiebel.punishapi.api.PunishAPI;
 import me.superbiebel.punishapi.dataobjects.OffenseProcessingRequest;
 import me.superbiebel.punishapi.dataobjects.OffenseProcessingTemplate;
-import me.superbiebel.punishapi.exceptions.ServiceNotFoundException;
 import me.superbiebel.punishapi.exceptions.StartupException;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
@@ -33,9 +33,9 @@ class GraalVMJSTests {
     }
     
     @Test //offenseProcessingTestFile1.js
-    void offenseProcessingJSProcessingTest() throws IOException, StartupException, ServiceNotFoundException {
+    void offenseProcessingJSProcessingTest() throws IOException {
         PunishAPI api = new PunishAPI();
-        api.startup();
+        DataAPI dataAPI = api.getDataAPI();
         OffenseProcessingRequest offenseProcessingRequest = OffenseProcessingRequest.builder()
                                                                     .processingTemplateUUID(UUID.randomUUID())
                                                                     .criminalUUID(UUID.randomUUID())
@@ -44,7 +44,7 @@ class GraalVMJSTests {
                                                                     .build();
         File scriptFile = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("offenseProcessingTestFiles/offenseProcessingTestFile1.js")).getFile());
         OffenseProcessingTemplate offenseProcessingTemplate = OffenseProcessingTemplate.builder().scriptFile(scriptFile).offenseProcessingTemplateUUID(UUID.randomUUID()).build();
-        OffenseHistoryRecordScriptObject result = ((JSOffenseProcessor) api.getCore().getOffenseManager().getService("JSGRAALVM")).processScript(offenseProcessingRequest, offenseProcessingTemplate.getScriptFile());
+        OffenseHistoryRecordScriptObject result = new JSOffenseProcessor(dataAPI).processScript(offenseProcessingRequest, offenseProcessingTemplate.getScriptFile());
         assertEquals("testvalueresult", result.attributes.get("testkeyresult"));
         assertEquals("testvaluepunishment",result.punishments.get(0).attributes.get("testkeypunishment"));
         assertEquals(1000,result.punishments.get(0).startTime);
@@ -67,8 +67,7 @@ class GraalVMJSTests {
                                                                     .build();
         File scriptFile = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("offenseProcessingTestFiles/importVariablesJSTest.js")).getFile());
         OffenseProcessingTemplate offenseProcessingTemplate = OffenseProcessingTemplate.builder().scriptFile(scriptFile).offenseProcessingTemplateUUID(UUID.randomUUID()).build();
-        assertDoesNotThrow(()->((JSOffenseProcessor)api.getCore().getOffenseManager().getService("JSGRAALVM")).processScript(offenseProcessingRequest, offenseProcessingTemplate.getScriptFile()));
-        
+        assertDoesNotThrow(()->(new JSOffenseProcessor(api.getDataAPI()).processOffense(offenseProcessingRequest, offenseProcessingTemplate.getScriptFile())));
     }
     
 }

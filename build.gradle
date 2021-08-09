@@ -29,7 +29,6 @@ dependencies {
     implementation 'org.graalvm.js:js-scriptengine:21.2.0'
     implementation 'org.graalvm.tools:profiler:21.2.0'
     implementation 'org.graalvm.tools:chromeinspector:21.2.0'
-
 }
 
 test {
